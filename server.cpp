@@ -240,10 +240,7 @@ void *solve(void *p)
 			if(substring(buf,"yes"))
 			{
 				string temp = extractFromLastLine(buf);
-				v[idx].status="BUSY";
-				v[v[idx].destid].status="BUSY";
-				temp = "Server:\nYou can now chat with the client\n" + temp+"S";
-				copy(temp, buf, 1);
+				strcpy(buf,"Server:\nYou can now chat with the clientS");
 				if (send(v[idx].sourcefd, buf, strlen(buf), 0) == -1)
 				{
 					if (v[idx].destid != -1)
@@ -256,7 +253,10 @@ void *solve(void *p)
 					perror("send");
 					pthread_exit(NULL);
 				}
-				strcpy(buf,"Server:\nClient has accepted your connection request\nYou can now chat with the clientS");
+				v[idx].status="BUSY";
+				v[v[idx].destid].status="BUSY";
+				temp = "Server:\nClient has accepted your connection request\nYou can now chat with the client\n" + temp+"S";
+				copy(temp, buf, 1);
 			}
 			else
 			{

@@ -64,7 +64,7 @@ vector<int> RC4(vector<int> &ip, vector<int>&K, int &K_len)
         temp = (S[i] + S[j])%256;
         K1.push_back(S[temp]);
     }
-    cout << "\n";
+    // cout << "\n";s
     // Encrypting using XOR
     vector<int>op;
     for(int i=0;i<ip.size();i++){
@@ -78,15 +78,15 @@ void RC4_Cipher(char buf[])
 	vector<int>ip, K;
 	int K_len, i;
 	for(int i = 0; buf[i] != '\0'; i++){
-		ip.push_back(buf[i]);
+		ip.push_back((int)buf[i]);
 	}
 	for(int i = 0; i < key.size(); i++){
-		K.push_back(key[i]);
+		K.push_back((int)key[i]);
 	}
 	K_len = K.size();
 	vector<int>op = RC4(ip, K, K_len);
-	for(i = 0; buf[i] != '\0'; i++){
-		buf[i] = op[i];
+	for(i = 0; i<op.size(); i++){
+		buf[i] = (char)op[i];
 	}
 	buf[i] = '\0';
 }
@@ -144,27 +144,33 @@ void *solve(void *p)
 		buf[numbytes] = '\0';
 		if(stat == "BUSY"){
 			RC4_Cipher(buf);
+			from = "client";
 			// printf("D-147-%s\n", buf);
-			if(buf[numbytes - 1] == 'S') from = "server";
-			else from = "client";
+			// if(buf[numbytes - 1] == 'S') from = "server";
+			// else from = "client";
 		}
 		numbytes--;
 		buf[numbytes] = '\0';
 		if(from == "server")
 		{
-			if (check == 0 && substring(buf, "Server:\nYou can now chat with the client"))
+			if (check == 0 && (substring(buf, "Server:\nYou can now chat with the client"))
+			
+			 || (substring(buf, "Server:\nClient has accepted your connection request\nYou can now chat with the client")))
 			{
+				cout << "D-158-status: " << stat << "\n";
+				printf("D-161-buf: %s\n", buf);
 				if(stat == "PENDING-R")
 				{
 					B = stoll(extractFromLastLine(buf));
 					key = to_string(power(B, x, a));
+					cout << "D-162-Key: " << key << "\n";
 				}
 				else extractFromLastLine(buf);
 				stat = "BUSY";
 				check = 1;
 			}
 			else if (check == 0 && substring(buf, "Server:\nWould")){
-				printf("%s\n", buf);
+				// printf("D-168-%s\n", buf);
 				for(int i = 44; buf[i] != '?'; i++){
 					client_id.push_back(buf[i]);
 				}
@@ -194,7 +200,7 @@ void *solve(void *p)
 			}
 		}
 		if(from == "client") cout << "Client-" << client_id << ":\n";
-		printf("\n%s\n", buf);
+		printf("%s\n", buf);
 		cout << "\nClient:\n";
 	}
 	status = 1;
@@ -293,6 +299,7 @@ int main(int argc, char *argv[])
 		{
 			choosePrivateKey(buf);
 			key = to_string(power(B, x, a));
+			cout << "D-298-Key: " << key << "\n";
 		}
 		else if (check==1 && stat == "BUSY" && !strcmp(buf, "good bye"))
 		{
@@ -306,8 +313,7 @@ int main(int argc, char *argv[])
 			buf[n] = 'C';
 			buf[n + 1] = '\0';
 			RC4_Cipher(buf);
-			for(int i = 0; i < strlen(buf); i++) cout << buf[i] << " ";
-			cout << "\n";
+			// printf("D-316-Cipher-Text: %s\n", buf);
 		}
 		else if ((!strcmp(buf, "close") && !check) || status)
 		{
