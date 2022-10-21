@@ -13,6 +13,7 @@
 using namespace std;
 #define PORT "3490"		 // the port client will be connecting to
 #define MAXDATASIZE 1000 // max number of bytes we can get at once
+using namespace std;
 // get sockaddr, IPv4 or IPv6:
 typedef struct data1
 {
@@ -31,7 +32,7 @@ string extractFromLastLine(char buf[])
 	}
 	buf[i] = '\0';
 	reverse(temp.begin(), temp.end());
-	cout << temp;
+	// cout << "D-35-" << temp << "\n";
 	return temp;
 }
 vector<int> RC4(vector<int> &ip, vector<int>&K, int &K_len)
@@ -116,7 +117,7 @@ void *solve(void *p)
 	for(i = 86; buf[i]!=' '; i++){
 		temp.push_back(buf[i]);
 	}
-	cout << temp;
+	// cout << "D-120-" << temp << "\n";
 	g = stoll(temp);
 	temp = "";
 	for(i++; buf[i]!='\0'; i++){
@@ -126,7 +127,7 @@ void *solve(void *p)
 	temp = "";
 	buf[86] = '\0';
 	printf("\n%s\n", buf);
-	printf("\nClient:");
+	cout << "\nClient:\n";
 	while (1)
 	{
 		numbytes = recv(ptr->sockfd, buf, MAXDATASIZE - 1, 0);
@@ -143,7 +144,7 @@ void *solve(void *p)
 		buf[numbytes] = '\0';
 		if(stat == "BUSY"){
 			RC4_Cipher(buf);
-			printf("%s\n", buf);
+			// printf("D-147-%s\n", buf);
 			if(buf[numbytes - 1] == 'S') from = "server";
 			else from = "client";
 		}
@@ -158,6 +159,7 @@ void *solve(void *p)
 					B = stoll(extractFromLastLine(buf));
 					key = to_string(power(B, x, a));
 				}
+				else extractFromLastLine(buf);
 				stat = "BUSY";
 				check = 1;
 			}
@@ -217,7 +219,7 @@ void choosePrivateKey(char buf[])
 		buf[i + n] = A[i];
 	}
 	buf[i + n] = '\0';
-	printf("D-220-%s\n", buf);
+	// printf("D-220-%s\n", buf);
 }
 int main(int argc, char *argv[])
 {
