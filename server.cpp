@@ -302,10 +302,13 @@ void *solve(void *p)
 			// str = "Client-" + to_string(idx) + ":\n";
 			if (!strcmp(buf, "good bye"))
 			{
+				sleep(1);
 				numbytes = recv(v[idx].sourcefd, buf, MAXDATASIZE - 1, 0);
+				buf[numbytes] = '\0';
 				v[idx].status = "FREE";
 				v[v[idx].destid].status = "FREE";
 				cout << "FREE\n";
+				printf("D-309-buf: %s\n", buf);
 				if(v[idx].destid==idx)
 				{
 					v[idx].destid = -1;
@@ -327,21 +330,21 @@ void *solve(void *p)
 				perror("send");
 				pthread_exit(NULL);
 			}
-			strcpy(buf, "\n\nServer:\n***Chat has ended***S");
-			if(v[v[idx].destid].status == "BUSY")
-			{
-			}
-			else if (send(v[idx].destfd, buf, strlen(buf), 0) == -1)
-			{
-				if (v[idx].destid != -1)
-				{
-					v[v[idx].destid].status = "FREE";
-					v[idx].destid = -1;
-				}
-				v[idx].id = -1;
-				perror("send");
-				pthread_exit(NULL);
-			}
+			// strcpy(buf, "\n\nServer:\n***Chat has ended***S");
+			// if(v[v[idx].destid].status == "BUSY")
+			// {
+			// }
+			// else if (send(v[idx].destfd, buf, strlen(buf), 0) == -1)
+			// {
+			// 	if (v[idx].destid != -1)
+			// 	{
+			// 		v[v[idx].destid].status = "FREE";
+			// 		v[idx].destid = -1;
+			// 	}
+			// 	v[idx].id = -1;
+			// 	perror("send");
+			// 	pthread_exit(NULL);
+			// }
 		}
 	}
 	v[idx].destid = -1;

@@ -110,7 +110,7 @@ void *solve(void *p)
 	char buf[MAXDATASIZE];
 	int numbytes;
 	data1 *ptr = (data1 *)p;
-	string s = " good bye", temp;
+	string s = "good bye", temp;
 	int i, n;
 	numbytes = recv(ptr->sockfd, buf, MAXDATASIZE - 1, 0);
 	buf[numbytes] = '\0';
@@ -157,21 +157,21 @@ void *solve(void *p)
 			
 			 || (substring(buf, "Server:\nClient has accepted your connection request\nYou can now chat with the client")))
 			{
-				cout << "D-158-status: " << stat << "\n";
-				printf("D-161-buf: %s\n", buf);
+				// cout << "D-158-status: " << stat << "\n";
+				// printf("D-161-buf: %s\n", buf);
 				if(stat == "PENDING-R")
 				{
 					B = stoll(extractFromLastLine(buf));
 					key = to_string(power(B, x, a));
-					cout << "D-162-Key: " << key << "\n";
+					// cout << "D-162-Key: " << key << "\n";
 				}
-				else extractFromLastLine(buf);
 				stat = "BUSY";
 				check = 1;
 			}
 			else if (check == 0 && substring(buf, "Server:\nWould")){
-				// printf("D-168-%s\n", buf);
-				for(int i = 44; buf[i] != '?'; i++){
+				// printf("D-168-%s\n43:%c\n", buf, buf[43]);
+				client_id = "";
+				for(int i = 43; buf[i] != '?'; i++){
 					client_id.push_back(buf[i]);
 				}
 				B = stoll(extractFromLastLine(buf));
@@ -186,17 +186,14 @@ void *solve(void *p)
 		}
 		else if (check == 1)
 		{
-			for (i = 0; buf[i] != '\0'; i++)
-				if (buf[i] == ':')
-					break;
-			i++;
-			if (numbytes - i == s.size())
+			if (numbytes == s.size())
 			{
-				for (; s[i] != '\0'; i++)
+				int i;
+				for (i = 0; s[i] != '\0'; i++)
 					if (s[i] != buf[i])
 						break;
 				if (s[i] == '\0')
-					check = 0, stat = "FREE", client_id = "";
+					check = 0, stat = "FREE", client_id = "", strcpy(buf, "Server:\n***Chat has ended***"), from = "server";
 			}
 		}
 		if(from == "client") cout << "Client-" << client_id << ":\n";
@@ -288,7 +285,7 @@ int main(int argc, char *argv[])
 		if (check==0 && stat == "FREE" && substring(buf, "connect"))
 		{
 			int i;
-			for(i = 7; buf[i] != ' '; i++);
+			for(i = 7; buf[i] == ' '; i++);
 			string temp;
 			for(; '0' <= buf[i] && buf[i] <= '9'; i++) temp.push_back(buf[i]);
 			client_id = temp;
@@ -299,13 +296,22 @@ int main(int argc, char *argv[])
 		{
 			choosePrivateKey(buf);
 			key = to_string(power(B, x, a));
-			cout << "D-298-Key: " << key << "\n";
+			// cout << "D-298-Key: " << key << "\n";
 		}
 		else if (check==1 && stat == "BUSY" && !strcmp(buf, "good bye"))
 		{
 			cout << "\nServer:\n***Chat has ended***\n\nClient:\n";
+			if (send(sockfd, buf, strlen(buf), 0) == -1)
+			{
+				perror("send");
+				exit(1);
+			}
+			buf[8] = 'C';
+			buf[9] = '\0';
+			sleep(1);
 			check = 0;
 			stat = "FREE";
+			RC4_Cipher(buf);
 		}
 		else if (check == 1 && stat == "BUSY")
 		{
