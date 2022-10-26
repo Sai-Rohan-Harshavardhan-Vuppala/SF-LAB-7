@@ -19,7 +19,7 @@ typedef struct data1
 {
 	int sockfd;
 } data1;
-int status, check;
+int status, check, serverfd;
 string stat = "FREE";
 long long int g = -1, a, B, x;
 string key, client_id, from = "server";
@@ -106,13 +106,13 @@ long long int power(long long int B, long long int x, long long int a)
 		
 	        // If y is odd, multiply x with result
 	        if (x % 2 == 1)
-	            res = (res * B) % a;
+	            res = (res * B);
 	
 	        // y = y/2
 	        x = x >> 1;
 	
 	        // Change x to x^2
-	        B = (B * B) % a;
+	        B = (B * B);
 	    }
 	    return res % a;
 }
@@ -139,6 +139,8 @@ void *solve(void *p)
 	buf[86] = '\0';
 	printf("\n%s\n", buf);
 	cout << "\nClient:\n";
+    strcpy(buf, "MITM");
+    sendMessage(buf, serverfd);
 	while (1)
 	{
 		numbytes = recv(ptr->sockfd, buf, MAXDATASIZE - 1, 0);
@@ -180,6 +182,7 @@ void *solve(void *p)
 				check = 1;
 			}
 			else if (check == 0 && substring(buf, "Server:\nWould")){
+
 				// printf("D-168-%s\n43:%c\n", buf, buf[43]);
 				client_id = "";
 				for(int i = 43; buf[i] != '?'; i++){
@@ -222,9 +225,9 @@ void *get_in_addr(struct sockaddr *sa)
 	}
 	return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
-void choosePrivateKey(char buf[], int mod_val)
+void choosePrivateKey(char buf[])
 {
-	x = rand()%mod_val;
+	x = rand();
 	string A = to_string(power(g, x, a));
 	int n = strlen(buf), i;
 	buf[n] = '\n';
@@ -234,6 +237,14 @@ void choosePrivateKey(char buf[], int mod_val)
 	}
 	buf[i + n] = '\0';
 	// printf("D-220-%s\n", buf);
+}
+void sendMessage(char buf[], int sockfd)
+{
+    if (send(sockfd, buf, strlen(buf), 0) == -1)
+	{
+		perror("send");
+		exit(1);
+	}
 }
 int main(int argc, char *argv[])
 {
@@ -284,6 +295,7 @@ int main(int argc, char *argv[])
 	pthread_data.sockfd = sockfd;
 	pthread_t tid;
 	pthread_create(&tid, NULL, solve, &pthread_data);
+    serverfd = sockfd;
 	while (1)
 	{
 		if (status == 1)
@@ -301,13 +313,13 @@ int main(int argc, char *argv[])
 			for(; '0' <= buf[i] && buf[i] <= '9'; i++) temp.push_back(buf[i]);
 			client_id = temp;
 			stat = "PENDING-R";
-			choosePrivateKey(buf, 37);
+			choosePrivateKey(buf);
 		}
 		else if (check == 0 && stat == "PENDING-A" && !strcmp(buf, "yes"))
 		{
-			choosePrivateKey(buf, 47);
+			choosePrivateKey(buf);
 			key = to_string(power(B, x, a));
-			cout << "D-298-Key: " << key << "\n";
+			// cout << "D-298-Key: " << key << "\n";
 		}
 		else if (check==1 && stat == "BUSY" && !strcmp(buf, "good bye"))
 		{
