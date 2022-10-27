@@ -177,6 +177,7 @@ void parseFile(int c1, int c2)
         B = stoll(temp);
         key = to_string(power(B, x, a));
         key_temp = key;
+        cout << key_temp << "\n";
         skipLines(file, ofile, 4);
         while(1){
             skipLines(file, ofile, 1);
@@ -195,7 +196,11 @@ void parseFile(int c1, int c2)
 int main()
 {
     int c1, c2;
-    g = 11, a = 7;
+    g = 39, a = 79;
+    cout<<"Enter the value of g : ";
+    cin>>g;
+    cout<<"Enter the value of a : ";
+    cin>>a; 
     cout << "Enter the client id's by giving space between them\n";
     cin >> c1 >> c2;
     parseFile(c1, c2);

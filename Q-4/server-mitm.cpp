@@ -63,19 +63,6 @@ bool substring(char buf[], string s)
 	}
 	return true;
 }
-// void sendMITM(char buf[], int idx)
-// {
-//     string temp;
-//     copy(temp, buf, 0);
-//     temp = to_string(v[idx].id) + "-" + to_string(v[v[idx].destid].id) + ":" + temp;
-//     if(mitm_id != -1){
-//         if (send(v[mitm_id].sourcefd, buf, strlen(buf), 0) == -1)
-// 	    {
-// 	    	v[mitm_id].id = -1;
-//             mitm_id = -1;
-// 	    }
-//     }
-// }
 void sendMessage(char buf[], int idx, int sockfd, int choice)
 {
 	if (send(sockfd, buf, strlen(buf), 0) == -1)
@@ -103,10 +90,18 @@ void writeToLogFile(string s, int idx)
 }
 void createLogFile(int idx)
 {
+	static bool first = true, flag = false;
 	fstream file;
 	if(v[idx].logFilename == ""){
 		string filename = "Log-" + to_string(min(idx, v[idx].destid)) + "-"+to_string(max(idx, v[idx].destid)) + ".txt";
 		v[idx].logFilename = v[v[idx].destid].logFilename = filename;
+		flag = true;
+	}
+	else first = false;
+	if(first && flag){
+		file.open(v[idx].logFilename, ios::out);
+		file.close();
+		first = false;
 	}
 	file.open(v[idx].logFilename, ios::out | ios::app);
 	if(file.is_open()){
@@ -149,11 +144,11 @@ void *solve(void *p)
 			if (v[idx].destid != -1 && v[v[idx].destid].id!=-1)
 			{
 				if(v[v[idx].destid].status == "PENDING-A")
-				strcpy(buf, "Server:\n***Requesting Client was disconnected unexpectedly***S");
+				strcpy(buf, "Server:\n***Requesting Client was disconnected unexpectedly***");
 				else if(v[v[idx].destid].status == "BUSY")
 				strcpy(buf, "Server:\n***Chat has ended***S");
 				else if(v[v[idx].destid].status == "PENDING-R")
-				strcpy(buf, "Server:\n***Requested Client was disconnected unexpectedly***S");
+				strcpy(buf, "Server:\n***Requested Client was disconnected unexpectedly***");
 				v[v[idx].destid].status = "FREE";
 				
 			}
@@ -185,7 +180,7 @@ void *solve(void *p)
 					else if (v[idx].id == v[i].id)
 						s = s + "Client-" + to_string(v[i].id) + " Status:" + v[i].status + " (YOU)\n";
 				}
-				s = s + "Enter <connect <client-id>> to connect to the corresponding clientS";
+				s = s + "Enter <connect <client-id>> to connect to the corresponding client";
 				copy(s, buf, 1);
                 sendMessage(buf, idx, v[idx].sourcefd, 2);
                 continue;
@@ -220,7 +215,7 @@ void *solve(void *p)
 					else if(k>=v.size() || v[k].id==-1)
 					{
 						v[idx].status = "FREE";	
-						strcpy(buf, "Server:\nInvalid Client-IdS");
+						strcpy(buf, "Server:\nInvalid Client-Id");
 					}
 					else if (k==idx || v[k].status == "FREE")
 					{
@@ -239,7 +234,7 @@ void *solve(void *p)
 								s.pop_back();
 							}
 							reverse(temp.begin(), temp.end());
-							s="Server:\nWould you like to chat with Client-"+to_string(idx)+"?\nEnter <yes> to accept and <no> to deny the request\n" + temp + "S";
+							s="Server:\nWould you like to chat with Client-"+to_string(idx)+"?\nEnter <yes> to accept and <no> to deny the request\n" + temp;
 							writeToLogFile(s, idx);
 							copy(s,buf,1);
                             sendMessage(buf, idx, v[idx].destfd, 0);
@@ -248,21 +243,21 @@ void *solve(void *p)
 							continue;
 						}
 						v[idx].status = "BUSY";
-						strcpy(buf,"Server:\nYou can now chat with the clientS");
-						writeToLogFile("Server:\nYou can now chat with the clientS", idx);
+						strcpy(buf,"Server:\nYou can now chat with the client");
+						writeToLogFile("Server:\nYou can now chat with the client", idx);
 					}
 					else
 					{
 						v[idx].status = "FREE";	
 						v[idx].destid=-1;
-						strcpy(buf, "Server:\nClient is busy at the momentS");
-						writeToLogFile("Server:\nYou can now chat with the clientS", idx);
+						strcpy(buf, "Server:\nClient is busy at the moment");
+						writeToLogFile("Server:\nYou can now chat with the client", idx);
 					}
 				}
 				if(chk==1)
 				{
 					cout << "I am Free" << "\n";
-					strcpy(buf, "Server:\nInvalid CommandS");
+					strcpy(buf, "Server:\nInvalid Command");
 					// writeToLogFile("Server:\nInvalid CommandS", idx);
 				}
 			}
@@ -276,11 +271,11 @@ void *solve(void *p)
 			if(substring(buf,"yes"))
 			{
 				temp = extractFromLastLine(buf);
-				strcpy(buf,"Server:\nYou can now chat with the clientS");
+				strcpy(buf,"Server:\nYou can now chat with the client");
                 sendMessage(buf, idx, v[idx].sourcefd, 2);
 				v[idx].status="BUSY";
 				v[v[idx].destid].status="BUSY";
-				temp = "Server:\nClient has accepted your connection request\nYou can now chat with the client\n" + temp+"S";
+				temp = "Server:\nClient has accepted your connection request\nYou can now chat with the client\n" + temp;
 				copy(temp, buf, 1);
 				writeToLogFile(temp, idx);
                 // sendMITM(buf, idx);
@@ -291,15 +286,15 @@ void *solve(void *p)
 				v[v[idx].destid].status="FREE";
 				v[v[idx].destid].destid=-1;
 				v[idx].destid = -1;
-				strcpy(buf,"Server:\nClient has denied your connection requestS");
-				writeToLogFile("Server:\nClient has denied your connection requestS", idx);
+				strcpy(buf,"Server:\nClient has denied your connection request");
+				writeToLogFile("Server:\nClient has denied your connection request", idx);
 			}
             sendMessage(buf, idx, v[idx].destfd, 2);
 		}
 		else if(v[idx].status=="PENDING-R")
 		{
-			strcpy(buf,"Server:\nConnection request pending\nPlease wait!S");
-			writeToLogFile("Server:\nConnection request pending\nPlease wait!S", idx);
+			strcpy(buf,"Server:\nConnection request pending\nPlease wait!");
+			writeToLogFile("Server:\nConnection request pending\nPlease wait!", idx);
             sendMessage(buf, idx, v[idx].sourcefd, 3);
 		}
 		else

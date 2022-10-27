@@ -2,21 +2,21 @@
 
 Client-1:
 connect 0
-4
+32
 Server:
 Would you like to chat with Client-1?
 Enter <yes> to accept and <no> to deny the request
-4S
+32
 yes
 2
 Server:
 Client has accepted your connection request
 You can now chat with the client
-2S
-Client-0:
-helloC
+2
 Client-1:
-heyyC
+hey
+Client-0:
+hi
 Client-0:
 good bye
 
@@ -24,24 +24,24 @@ good bye
 
 
 
-Client-1:
-connect 0
-2
+Client-0:
+connect 1
+63
 Server:
-Would you like to chat with Client-1?
+Would you like to chat with Client-0?
 Enter <yes> to accept and <no> to deny the request
-2S
+63
 Server:
 Connection request pending
-Please wait!S
+Please wait!
 yes
-4
+5
 Server:
 Client has accepted your connection request
 You can now chat with the client
-4S
+5
 Client-1:
-connect 0C
+hello
 Client-1:
 good bye
 
@@ -51,13 +51,13 @@ good bye
 
 Client-1:
 connect 0
-2
+37
 Server:
 Would you like to chat with Client-1?
 Enter <yes> to accept and <no> to deny the request
-2S
+37
 no
 Server:
-Client has denied your connection requestS
+Client has denied your connection request
 
 ----

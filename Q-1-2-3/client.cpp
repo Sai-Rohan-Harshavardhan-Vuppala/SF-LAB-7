@@ -156,12 +156,7 @@ void *solve(void *p)
 		if(stat == "BUSY"){
 			RC4_Cipher(buf);
 			from = "client";
-			// printf("D-147-%s\n", buf);
-			// if(buf[numbytes - 1] == 'S') from = "server";
-			// else from = "client";
 		}
-		numbytes--;
-		buf[numbytes] = '\0';
 		if(from == "server")
 		{
 			if (check == 0 && (substring(buf, "Server:\nYou can now chat with the client"))
@@ -174,7 +169,7 @@ void *solve(void *p)
 				{
 					B = stoll(extractFromLastLine(buf));
 					key = to_string(power(B, x, a));
-					cout << "D-162-Key: " << key << "\n";
+					// cout << "D-162-Key: " << key << "\n";
 				}
 				stat = "BUSY";
 				check = 1;
@@ -307,7 +302,7 @@ int main(int argc, char *argv[])
 		{
 			choosePrivateKey(buf, 47);
 			key = to_string(power(B, x, a));
-			cout << "D-298-Key: " << key << "\n";
+			// cout << "D-298-Key: " << key << "\n";
 		}
 		else if (check==1 && stat == "BUSY" && !strcmp(buf, "good bye"))
 		{
@@ -317,8 +312,6 @@ int main(int argc, char *argv[])
 				perror("send");
 				exit(1);
 			}
-			buf[8] = 'C';
-			buf[9] = '\0';
 			sleep(1);
 			check = 0;
 			stat = "FREE";
@@ -327,9 +320,6 @@ int main(int argc, char *argv[])
 		}
 		else if (check == 1 && stat == "BUSY")
 		{
-			int n = strlen(buf);
-			buf[n] = 'C';
-			buf[n + 1] = '\0';
 			RC4_Cipher(buf);
 			// printf("D-316-Cipher-Text: %s\n", buf);
 		}
