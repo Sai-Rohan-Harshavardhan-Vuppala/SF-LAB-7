@@ -174,7 +174,7 @@ void *solve(void *p)
 				{
 					B = stoll(extractFromLastLine(buf));
 					key = to_string(power(B, x, a));
-					// cout << "D-162-Key: " << key << "\n";
+					cout << "D-162-Key: " << key << "\n";
 				}
 				stat = "BUSY";
 				check = 1;
@@ -323,6 +323,7 @@ int main(int argc, char *argv[])
 			check = 0;
 			stat = "FREE";
 			RC4_Cipher(buf);
+			from = "server";
 		}
 		else if (check == 1 && stat == "BUSY")
 		{

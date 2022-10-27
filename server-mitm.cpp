@@ -314,7 +314,7 @@ void *solve(void *p)
 				sleep(1);
 				numbytes = recv(v[idx].sourcefd, buf, MAXDATASIZE - 1, 0);
 				buf[numbytes] = '\0';
-				writeToLogFile(s_idx + temp, idx);
+				// writeToLogFile(s_idx + temp, idx);
 				v[idx].status = "FREE";
 				v[v[idx].destid].status = "FREE";
 				writeToLogFile("\n\n", idx);

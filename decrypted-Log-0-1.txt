@@ -7,7 +7,6 @@ Server:
 Would you like to chat with Client-1?
 Enter <yes> to accept and <no> to deny the request
 4S
-Client-0:
 yes
 2
 Server:
@@ -15,9 +14,9 @@ Client has accepted your connection request
 You can now chat with the client
 2S
 Client-0:
-6’ÌoD
+helloC
 Client-1:
-6’Ùzh
+heyyC
 Client-0:
 good bye
 
@@ -35,7 +34,6 @@ Enter <yes> to accept and <no> to deny the request
 Server:
 Connection request pending
 Please wait!S
-Client-0:
 yes
 4
 Server:
@@ -43,7 +41,7 @@ Client has accepted your connection request
 You can now chat with the client
 4S
 Client-1:
-=˜ÎmN$œz9²
+connect 0C
 Client-1:
 good bye
 
@@ -58,21 +56,8 @@ Server:
 Would you like to chat with Client-1?
 Enter <yes> to accept and <no> to deny the request
 2S
-Client-0:
 no
 Server:
 Client has denied your connection requestS
 
-----
-----
-----
-----
-----
-----
-----
-----
-----
-----
-----
-----
 ----
